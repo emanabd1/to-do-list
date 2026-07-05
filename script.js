@@ -66,3 +66,50 @@ function render() {
   }
   updateCounters();
 }
+
+function addTask() {
+  var inputValue = taskInput.value.trim();
+  if (inputValue === "") {
+    errorMsg.textContent = "Please type a task first!";
+    return;
+  }
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].text.toLowerCase() === inputValue.toLowerCase()) {
+      errorMsg.textContent = "This task already exists!";
+      return;
+    }
+  }
+  errorMsg.textContent = "";
+  var newTask = {
+    text: inputValue,
+    done: false
+  };
+  tasks.push(newTask);
+  taskInput.value = "";
+  taskInput.focus();
+  render();
+}
+
+
+function toggleTask(index) {
+  if (tasks[index].done === true) {
+    tasks[index].done = false;
+  } else {
+    tasks[index].done = true;
+  }
+  
+  errorMsg.textContent = "";
+  render();
+}
+
+function deleteTask(index) {
+  tasks.splice(index, 1);
+  errorMsg.textContent = "";
+  render();
+}
+addBtn.addEventListener("click", addTask);
+taskInput.addEventListener("keyup", function(event) {
+  if (event.key === "Enter") {
+    addTask();
+  }
+});
