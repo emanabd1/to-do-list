@@ -7,7 +7,9 @@ var counterParagraph = document.getElementById("counter");
 var clearBtn = document.getElementById("clearBtn");
 var allDoneMsg = document.getElementById("allDoneMsg");
 var colorCircles = document.querySelectorAll(".color-circle");
+
 var tasks = [];
+
 function updateCounters() {
   var totalTasks = tasks.length;
   var undoneCount = 0;
@@ -30,8 +32,8 @@ function updateCounters() {
     allDoneMsg.classList.remove("visible");
   }
 }
-function render() {
 
+function showTasksOnScreen() {
   taskList.innerHTML = "";
 
   for (var i = 0; i < tasks.length; i++) {
@@ -43,13 +45,14 @@ function render() {
     if (currentTask.done === true) {
       li.classList.add("done");
     }
+
     var textSpan = document.createElement("span");
     textSpan.className = "task-text";
     textSpan.textContent = currentTask.text;
     li.appendChild(textSpan);
+
     var doneBtn = document.createElement("button");
     doneBtn.className = "done-btn";
-    
     if (currentTask.done === true) {
       doneBtn.textContent = "Undo";
     } else {
@@ -57,39 +60,47 @@ function render() {
     }
     doneBtn.setAttribute("onclick", "toggleTask(" + i + ")");
     li.appendChild(doneBtn);
+
     var deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
     deleteBtn.textContent = "Delete";
     deleteBtn.setAttribute("onclick", "deleteTask(" + i + ")");
     li.appendChild(deleteBtn);
+
     taskList.appendChild(li);
   }
+
   updateCounters();
 }
 
 function addTask() {
   var inputValue = taskInput.value.trim();
+
   if (inputValue === "") {
     errorMsg.textContent = "Please type a task first!";
     return;
   }
+
   for (var i = 0; i < tasks.length; i++) {
     if (tasks[i].text.toLowerCase() === inputValue.toLowerCase()) {
       errorMsg.textContent = "This task already exists!";
       return;
     }
   }
+
   errorMsg.textContent = "";
+
   var newTask = {
     text: inputValue,
     done: false
   };
   tasks.push(newTask);
+
   taskInput.value = "";
   taskInput.focus();
-  render();
-}
 
+  showTasksOnScreen();
+}
 
 function toggleTask(index) {
   if (tasks[index].done === true) {
@@ -99,43 +110,42 @@ function toggleTask(index) {
   }
   
   errorMsg.textContent = "";
-  render();
+  showTasksOnScreen();
 }
 
 function deleteTask(index) {
   tasks.splice(index, 1);
   errorMsg.textContent = "";
-  render();
+  showTasksOnScreen();
 }
+
+function clearAllTasks() {
+  tasks = [];
+  errorMsg.textContent = "";
+  showTasksOnScreen();
+}
+
 addBtn.addEventListener("click", addTask);
+
 taskInput.addEventListener("keyup", function(event) {
   if (event.key === "Enter") {
     addTask();
   }
 });
 
-function clearAllTasks() {
-  tasks = [];
-  errorMsg.textContent = "";
-  render();
-}
 clearBtn.addEventListener("click", clearAllTasks);
-
 
 colorCircles.forEach(function(circle) {
   circle.addEventListener("click", function() {
-
     colorCircles.forEach(function(c) {
       c.classList.remove("active");
     });
 
-
     circle.classList.add("active");
 
-
     var chosenColor = circle.dataset.color;
-    
-
     document.body.style.backgroundColor = chosenColor;
   });
 });
+
+showTasksOnScreen();
