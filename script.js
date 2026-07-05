@@ -113,3 +113,29 @@ taskInput.addEventListener("keyup", function(event) {
     addTask();
   }
 });
+
+function clearAllTasks() {
+  tasks = [];
+  errorMsg.textContent = "";
+  render();
+}
+clearBtn.addEventListener("click", clearAllTasks);
+
+
+colorCircles.forEach(function(circle) {
+  circle.addEventListener("click", function() {
+
+    colorCircles.forEach(function(c) {
+      c.classList.remove("active");
+    });
+
+
+    circle.classList.add("active");
+
+
+    var chosenColor = circle.dataset.color;
+    
+
+    document.body.style.backgroundColor = chosenColor;
+  });
+});
