@@ -27,6 +27,42 @@ function updateCounters() {
     allDoneMsg.classList.add("visible");
   } else {
     counterParagraph.innerHTML = 'Tasks remaining: <span id="remainingCount">' + undoneCount + '</span> (' + completedCount + ' of ' + totalTasks + ' completed)';
-    allDoneMsg.classList.remove("visible"); // Hide celebration text block
+    allDoneMsg.classList.remove("visible");
   }
+}
+function render() {
+
+  taskList.innerHTML = "";
+
+  for (var i = 0; i < tasks.length; i++) {
+    var currentTask = tasks[i];
+
+    var li = document.createElement("li");
+    li.className = "task-item";
+
+    if (currentTask.done === true) {
+      li.classList.add("done");
+    }
+    var textSpan = document.createElement("span");
+    textSpan.className = "task-text";
+    textSpan.textContent = currentTask.text;
+    li.appendChild(textSpan);
+    var doneBtn = document.createElement("button");
+    doneBtn.className = "done-btn";
+    
+    if (currentTask.done === true) {
+      doneBtn.textContent = "Undo";
+    } else {
+      doneBtn.textContent = "Done";
+    }
+    doneBtn.setAttribute("onclick", "toggleTask(" + i + ")");
+    li.appendChild(doneBtn);
+    var deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.setAttribute("onclick", "deleteTask(" + i + ")");
+    li.appendChild(deleteBtn);
+    taskList.appendChild(li);
+  }
+  updateCounters();
 }
