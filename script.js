@@ -1,34 +1,32 @@
-var taskInput = document.getElementById("taskInput");
-var addBtn = document.getElementById("addBtn");
-var taskList = document.getElementById("taskList");
-var errorMsg = document.getElementById("errorMsg");
-var remainingCount = document.getElementById("remainingCount");
-var counterParagraph = document.getElementById("counter");
-var clearBtn = document.getElementById("clearBtn");
-var allDoneMsg = document.getElementById("allDoneMsg");
-var colorCircles = document.querySelectorAll(".color-circle");
+const taskInput = document.getElementById("taskInput");
+const addBtn = document.getElementById("addBtn");
+const taskList = document.getElementById("taskList");
+const errorMsg = document.getElementById("errorMsg");
+const remainingCount = document.getElementById("remainingCount");
+const counterParagraph = document.getElementById("counter");
+const clearBtn = document.getElementById("clearBtn");
+const allDoneMsg = document.getElementById("allDoneMsg");
+const colorCircles = document.querySelectorAll(".color-circle");
 
-var tasks = [];
+let tasks = [];
 
 function updateCounters() {
-  var totalTasks = tasks.length;
-  var undoneCount = 0;
+  const totalTasks = tasks.length;
+  let undoneCount = 0;
 
-  for (var i = 0; i < tasks.length; i++) {
-    if (tasks[i].done === false) {
+  tasks.forEach(function(task) {
+    if (task.done === false) {
       undoneCount = undoneCount + 1;
     }
-  }
+  });
 
-  var completedCount = totalTasks - undoneCount;
-
-  remainingCount.textContent = undoneCount + " (" + completedCount + " of " + totalTasks + " completed)";
+  const completedCount = totalTasks - undoneCount;
 
   if (totalTasks > 0 && undoneCount === 0) {
     counterParagraph.innerHTML = '🎉 <span id="remainingCount" style="color: #388e3c; font-weight: bold;">All tasks done!</span>';
     allDoneMsg.classList.add("visible");
   } else {
-    counterParagraph.innerHTML = 'Tasks remaining: <span id="remainingCount">' + undoneCount + '</span> (' + completedCount + ' of ' + totalTasks + ' completed)';
+    counterParagraph.innerHTML = `Tasks remaining: <span id="remainingCount">${undoneCount}</span> (${completedCount} of ${totalTasks} completed)`;
     allDoneMsg.classList.remove("visible");
   }
 }
@@ -36,61 +34,64 @@ function updateCounters() {
 function showTasksOnScreen() {
   taskList.innerHTML = "";
 
-  for (var i = 0; i < tasks.length; i++) {
-    var currentTask = tasks[i];
-
-    var li = document.createElement("li");
+  tasks.forEach(function(currentTask, index) {
+    const li = document.createElement("li");
     li.className = "task-item";
 
     if (currentTask.done === true) {
       li.classList.add("done");
     }
 
-    var textSpan = document.createElement("span");
+    const textSpan = document.createElement("span");
     textSpan.className = "task-text";
     textSpan.textContent = currentTask.text;
     li.appendChild(textSpan);
 
-    var doneBtn = document.createElement("button");
+    const doneBtn = document.createElement("button");
     doneBtn.className = "done-btn";
-    if (currentTask.done === true) {
-      doneBtn.textContent = "Undo";
-    } else {
-      doneBtn.textContent = "Done";
-    }
-    doneBtn.setAttribute("onclick", "toggleTask(" + i + ")");
+    doneBtn.textContent = currentTask.done === true ? "Undo" : "Done";
+    doneBtn.addEventListener("click", function() {
+      toggleTask(index);
+    });
     li.appendChild(doneBtn);
 
-    var deleteBtn = document.createElement("button");
+    const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
     deleteBtn.textContent = "Delete";
-    deleteBtn.setAttribute("onclick", "deleteTask(" + i + ")");
+    deleteBtn.addEventListener("click", function() {
+      deleteTask(index);
+    });
     li.appendChild(deleteBtn);
 
     taskList.appendChild(li);
-  }
+  });
 
   updateCounters();
 }
 
 function addTask() {
-  var inputValue = taskInput.value.trim();
+  const inputValue = taskInput.value.trim();
 
-  if (inputValue === "") {
+  if (!inputValue) {
     errorMsg.textContent = "Please type a task first!";
     return;
   }
 
-  for (var i = 0; i < tasks.length; i++) {
-    if (tasks[i].text.toLowerCase() === inputValue.toLowerCase()) {
-      errorMsg.textContent = "This task already exists!";
-      return;
+  let isDuplicate = false;
+  tasks.forEach(function(task) {
+    if (task.text.toLowerCase() === inputValue.toLowerCase()) {
+      isDuplicate = true;
     }
+  });
+
+  if (isDuplicate) {
+    errorMsg.textContent = "This task already exists!";
+    return;
   }
 
   errorMsg.textContent = "";
 
-  var newTask = {
+  const newTask = {
     text: inputValue,
     done: false
   };
@@ -143,7 +144,7 @@ colorCircles.forEach(function(circle) {
 
     circle.classList.add("active");
 
-    var chosenColor = circle.dataset.color;
+    const chosenColor = circle.dataset.color;
     document.body.style.backgroundColor = chosenColor;
   });
 });
