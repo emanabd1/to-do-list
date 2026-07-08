@@ -10,25 +10,63 @@ const colorCircles = document.querySelectorAll(".color-circle");
 
 let tasks = [];
 
-function updateCounters() {
-  const totalTasks = tasks.length;
-  let undoneCount = 0;
+function addTask() {
+  const inputValue = taskInput.value.trim();
 
+  if (!inputValue) {
+    errorMsg.textContent = "Please type a task first!";
+    return;
+  }
+
+  let isDuplicate = false;
   tasks.forEach(function(task) {
-    if (task.done === false) {
-      undoneCount = undoneCount + 1;
+    if (task.text.toLowerCase() === inputValue.toLowerCase()) {
+      isDuplicate = true;
     }
   });
 
-  const completedCount = totalTasks - undoneCount;
-
-  if (totalTasks > 0 && undoneCount === 0) {
-    counterParagraph.innerHTML = '🎉 <span id="remainingCount" style="color: #388e3c; font-weight: bold;">All tasks done!</span>';
-    allDoneMsg.classList.add("visible");
-  } else {
-    counterParagraph.innerHTML = `Tasks remaining: <span id="remainingCount">${undoneCount}</span> (${completedCount} of ${totalTasks} completed)`;
-    allDoneMsg.classList.remove("visible");
+  if (isDuplicate) {
+    errorMsg.textContent = "This task already exists!";
+    return;
   }
+
+  errorMsg.textContent = "";
+
+  const newTask = {
+    text: inputValue,
+    done: false
+  };
+  tasks.push(newTask);
+
+  taskInput.value = "";
+  taskInput.focus();
+
+  showTasksOnScreen();
+}
+
+addBtn.addEventListener("click", addTask);
+
+taskInput.addEventListener("keyup", function(event) {
+  if (event.key === "Enter") {
+    addTask();
+  }
+});
+
+function toggleTask(index) {
+  if (tasks[index].done === true) {
+    tasks[index].done = false;
+  } else {
+    tasks[index].done = true;
+  }
+  
+  errorMsg.textContent = "";
+  showTasksOnScreen();
+}
+
+function deleteTask(index) {
+  tasks.splice(index, 1);
+  errorMsg.textContent = "";
+  showTasksOnScreen();
 }
 
 function showTasksOnScreen() {
@@ -69,55 +107,25 @@ function showTasksOnScreen() {
   updateCounters();
 }
 
-function addTask() {
-  const inputValue = taskInput.value.trim();
+function updateCounters() {
+  const totalTasks = tasks.length;
+  let undoneCount = 0;
 
-  if (!inputValue) {
-    errorMsg.textContent = "Please type a task first!";
-    return;
-  }
-
-  let isDuplicate = false;
   tasks.forEach(function(task) {
-    if (task.text.toLowerCase() === inputValue.toLowerCase()) {
-      isDuplicate = true;
+    if (task.done === false) {
+      undoneCount = undoneCount + 1;
     }
   });
 
-  if (isDuplicate) {
-    errorMsg.textContent = "This task already exists!";
-    return;
-  }
+  const completedCount = totalTasks - undoneCount;
 
-  errorMsg.textContent = "";
-
-  const newTask = {
-    text: inputValue,
-    done: false
-  };
-  tasks.push(newTask);
-
-  taskInput.value = "";
-  taskInput.focus();
-
-  showTasksOnScreen();
-}
-
-function toggleTask(index) {
-  if (tasks[index].done === true) {
-    tasks[index].done = false;
+  if (totalTasks > 0 && undoneCount === 0) {
+    counterParagraph.innerHTML = '🎉 <span id="remainingCount" style="color: #388e3c; font-weight: bold;">All tasks done!</span>';
+    allDoneMsg.classList.add("visible");
   } else {
-    tasks[index].done = true;
+    counterParagraph.innerHTML = `Tasks remaining: <span id="remainingCount">${undoneCount}</span> (${completedCount} of ${totalTasks} completed)`;
+    allDoneMsg.classList.remove("visible");
   }
-  
-  errorMsg.textContent = "";
-  showTasksOnScreen();
-}
-
-function deleteTask(index) {
-  tasks.splice(index, 1);
-  errorMsg.textContent = "";
-  showTasksOnScreen();
 }
 
 function clearAllTasks() {
@@ -125,14 +133,6 @@ function clearAllTasks() {
   errorMsg.textContent = "";
   showTasksOnScreen();
 }
-
-addBtn.addEventListener("click", addTask);
-
-taskInput.addEventListener("keyup", function(event) {
-  if (event.key === "Enter") {
-    addTask();
-  }
-});
 
 clearBtn.addEventListener("click", clearAllTasks);
 
